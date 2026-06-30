@@ -1,0 +1,135 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: lra-postgres
+    environment:
+      POSTGRES_USER: lra
+      POSTGRES_PASSWORD: lra_password
+      POSTGRES_DB: lra
+    ports:
+      - "15432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lra -d lra"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:8
+    container_name: lra-redis
+    ports:
+      - "16379:6379"
+    volumes:
+      - redis_data:/data
+
+  qdrant:
+    image: qdrant/qdrant:v1.14.1
+    container_name: lra-qdrant
+    ports:
+      - "16333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+  neo4j:
+    image: neo4j:5.26
+    container_name: lra-neo4j
+    environment:
+      NEO4J_AUTH: neo4j/neo4j_password
+      NEO4J_server_memory_heap_initial__size: 512m
+      NEO4J_server_memory_heap_max__size: 1g
+    ports:
+      - "17474:7474"
+      - "17687:7687"
+    volumes:
+      - neo4j_data:/data
+
+  minio:
+    image: minio/minio:latest
+    container_name: lra-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio_password
+    ports:
+      - "19000:9000"
+      - "19001:9001"
+    volumes:
+      - minio_data:/data
+
+  prometheus:
+    image: prom/prometheus:v3.4.2
+    container_name: lra-prometheus
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "19090:9090"
+
+  grafana:
+    image: grafana/grafana:11.5.1
+    container_name: lra-grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    ports:
+      - "13001:3000"
+    volumes:
+      - ./infra/grafana/provisioning:/etc/grafana/provisioning
+      - ./infra/dashboards:/var/lib/grafana/dashboards
+
+  api:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.api
+    container_name: lra-api
+    env_file:
+      - .env
+    ports:
+      - "18000:18000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      qdrant:
+        condition: service_started
+      neo4j:
+        condition: service_started
+      minio:
+        condition: service_started
+    volumes:
+      - .:/workspace
+
+  worker:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.api
+    container_name: lra-worker
+    env_file:
+      - .env
+    command: uv run celery -A lra_api.workers.celery_app.celery_app worker -l info
+    depends_on:
+      - api
+      - redis
+    volumes:
+      - .:/workspace
+
+  web:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.web
+    container_name: lra-web
+    ports:
+      - "13000:13000"
+    depends_on:
+      - api
+    volumes:
+      - ./apps/web:/workspace/apps/web
+
+volumes:
+  postgres_data:
+  redis_data:
+  qdrant_data:
+  neo4j_data:
+  minio_data:

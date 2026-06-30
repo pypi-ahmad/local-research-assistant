@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual env
+.venv/
+
+# Node
+node_modules/
+apps/web/dist/
+apps/web/playwright-report/
+apps/web/test-results/
+
+# Runtime
+*.log
+*.db
+.env
+.env.*
+!.env.example
+
+# Storage
+storage/
+artifacts/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store

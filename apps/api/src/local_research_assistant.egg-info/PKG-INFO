@@ -1,0 +1,127 @@
+Metadata-Version: 2.4
+Name: local-research-assistant
+Version: 0.1.0
+Summary: Production-grade local AI research assistant with offline Ollama inference
+Author: Ahmad
+Requires-Python: <3.13,>=3.12
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: fastapi>=0.116.0
+Requires-Dist: uvicorn[standard]>=0.35.0
+Requires-Dist: sqlalchemy>=2.0.38
+Requires-Dist: asyncpg>=0.30.0
+Requires-Dist: psycopg[binary]>=3.2.9
+Requires-Dist: alembic>=1.16.0
+Requires-Dist: pydantic>=2.11.7
+Requires-Dist: pydantic-settings>=2.10.1
+Requires-Dist: python-multipart>=0.0.20
+Requires-Dist: email-validator>=2.2.0
+Requires-Dist: passlib[argon2]>=1.7.4
+Requires-Dist: pyjwt>=2.10.1
+Requires-Dist: httpx>=0.28.1
+Requires-Dist: tenacity>=9.1.2
+Requires-Dist: python-dateutil>=2.9.0.post0
+Requires-Dist: loguru>=0.7.3
+Requires-Dist: prometheus-client>=0.22.1
+Requires-Dist: psutil>=7.0.0
+Requires-Dist: sqlmodel>=0.0.24
+Requires-Dist: redis>=6.2.0
+Requires-Dist: celery>=5.5.3
+Requires-Dist: qdrant-client>=1.15.1
+Requires-Dist: neo4j>=5.28.2
+Requires-Dist: boto3>=1.39.9
+Requires-Dist: python-magic>=0.4.27
+Requires-Dist: pypdf>=5.8.0
+Requires-Dist: python-docx>=1.2.0
+Requires-Dist: python-pptx>=1.0.2
+Requires-Dist: openpyxl>=3.1.5
+Requires-Dist: pandas>=2.3.1
+Requires-Dist: beautifulsoup4>=4.13.4
+Requires-Dist: markdown>=3.8.2
+Requires-Dist: pillow>=11.3.0
+Requires-Dist: docling>=2.43.0
+Requires-Dist: gitpython>=3.1.45
+Requires-Dist: yt-dlp>=2025.6.30
+Requires-Dist: sentence-transformers>=5.0.0
+Requires-Dist: networkx>=3.5
+Requires-Dist: numpy>=2.3.1
+Requires-Dist: orjson>=3.10.18
+Requires-Dist: sse-starlette>=2.3.6
+Dynamic: license-file
+
+# Local Research Assistant
+
+Privacy-first, production-grade local AI research platform with NotebookLM-style workflows.
+
+## What This Repository Contains
+
+- FastAPI backend (`apps/api`) with auth, ingestion, OCR, RAG, hybrid search, study tools, and knowledge graph APIs
+- React frontend (`apps/web`) with research workspace, chat, documents, search, graph, and system monitoring
+- Docker-based infrastructure for Postgres, Redis, Qdrant, Neo4j, MinIO, Prometheus, and Grafana
+- Alembic migrations, tests, and operational runbooks
+
+## Quick Start
+
+1. Copy env:
+
+```bash
+cp .env.example .env
+```
+
+2. Create Python environment and install dependencies:
+
+```bash
+UV_CACHE_DIR=.uv-cache-temp uv venv --python 3.12.10
+source .venv/bin/activate
+UV_CACHE_DIR=.uv-cache-temp uv sync --group dev
+```
+
+3. Start infrastructure:
+
+```bash
+docker compose up -d
+```
+
+4. Run backend API:
+
+```bash
+source .venv/bin/activate
+uv run uvicorn lra_api.main:app --host 0.0.0.0 --port 18000 --reload
+```
+
+5. Run worker:
+
+```bash
+source .venv/bin/activate
+uv run celery -A lra_api.workers.celery_app.celery_app worker -l info
+```
+
+6. Run frontend:
+
+```bash
+cd apps/web
+npm install
+npm run dev
+```
+
+## Documentation Index
+
+- [Architecture](docs/architecture/ARCHITECTURE.md)
+- [Installation Guide](docs/guides/INSTALLATION.md)
+- [API Guide](docs/api/API.md)
+- [RAG Guide](docs/guides/RAG_GUIDE.md)
+- [OCR Guide](docs/guides/OCR_GUIDE.md)
+- [Search Guide](docs/guides/SEARCH_GUIDE.md)
+- [Knowledge Graph Guide](docs/guides/KNOWLEDGE_GRAPH_GUIDE.md)
+- [Deployment Guide](docs/guides/DEPLOYMENT_GUIDE.md)
+- [Docker Guide](docs/guides/DOCKER_GUIDE.md)
+- [GPU Setup Guide](docs/guides/GPU_SETUP_GUIDE.md)
+- [Ollama Configuration Guide](docs/guides/OLLAMA_CONFIGURATION_GUIDE.md)
+- [Troubleshooting](docs/guides/TROUBLESHOOTING.md)
+- [FAQ](docs/guides/FAQ.md)
+- [Performance Tuning Guide](docs/guides/PERFORMANCE_TUNING_GUIDE.md)
+- [Beginner Learning Guide](docs/guides/BEGINNER_LEARNING_GUIDE.md)
+
+## License
+
+MIT

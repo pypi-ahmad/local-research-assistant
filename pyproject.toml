@@ -1,0 +1,106 @@
+[project]
+name = "local-research-assistant"
+version = "0.1.0"
+description = "Production-grade local AI research assistant with offline Ollama inference"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+authors = [{ name = "Ahmad" }]
+dependencies = [
+  "fastapi>=0.116.0",
+  "uvicorn[standard]>=0.35.0",
+  "sqlalchemy>=2.0.38",
+  "asyncpg>=0.30.0",
+  "psycopg[binary]>=3.2.9",
+  "alembic>=1.16.0",
+  "pydantic>=2.11.7",
+  "pydantic-settings>=2.10.1",
+  "python-multipart>=0.0.20",
+  "email-validator>=2.2.0",
+  "passlib[argon2]>=1.7.4",
+  "pyjwt>=2.10.1",
+  "httpx>=0.28.1",
+  "tenacity>=9.1.2",
+  "python-dateutil>=2.9.0.post0",
+  "loguru>=0.7.3",
+  "prometheus-client>=0.22.1",
+  "psutil>=7.0.0",
+  "sqlmodel>=0.0.24",
+  "redis>=6.2.0",
+  "celery>=5.5.3",
+  "qdrant-client>=1.15.1",
+  "neo4j>=5.28.2",
+  "boto3>=1.39.9",
+  "python-magic>=0.4.27",
+  "pypdf>=5.8.0",
+  "python-docx>=1.2.0",
+  "python-pptx>=1.0.2",
+  "openpyxl>=3.1.5",
+  "pandas>=2.3.1",
+  "beautifulsoup4>=4.13.4",
+  "markdown>=3.8.2",
+  "pillow>=11.3.0",
+  "docling>=2.43.0",
+  "gitpython>=3.1.45",
+  "yt-dlp>=2025.6.30",
+  "sentence-transformers>=5.0.0",
+  "networkx>=3.5",
+  "numpy>=2.3.1",
+  "orjson>=3.10.18",
+  "sse-starlette>=2.3.6",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=8.4.1",
+  "pytest-asyncio>=1.1.0",
+  "pytest-cov>=6.2.1",
+  "faker>=37.4.2",
+  "ruff>=0.12.2",
+  "mypy>=1.16.1",
+  "types-redis>=4.6.0.20241004",
+  "types-python-dateutil>=2.9.0.20250516",
+  "types-requests>=2.32.4.20250611",
+]
+
+[build-system]
+requires = ["setuptools>=80.9.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "apps/api/src"}
+
+[tool.setuptools.packages.find]
+where = ["apps/api/src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["apps/api/src"]
+addopts = "-q --disable-warnings"
+asyncio_mode = "auto"
+testpaths = ["apps/api/tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "N", "S", "ASYNC", "A"]
+ignore = [
+  "S104",
+  "S101",
+  "B008",
+  "S105",
+  "S603",
+  "S607",
+  "S608",
+  "ASYNC221",
+  "ASYNC240",
+  "E501",
+  "I001",
+  "F403",
+]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+ignore_missing_imports = true
+exclude = ["alembic", "apps/web"]

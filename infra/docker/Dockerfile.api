@@ -1,0 +1,25 @@
+FROM python:3.12-slim
+
+ENV UV_PROJECT_ENVIRONMENT=/workspace/.venv
+WORKDIR /workspace
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    git \
+    libmagic1 \
+    ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+ENV PATH="/root/.local/bin:${PATH}"
+
+COPY pyproject.toml README.md ./
+COPY apps/api/src ./apps/api/src
+COPY apps/api/alembic ./apps/api/alembic
+COPY apps/api/alembic.ini ./apps/api/alembic.ini
+
+RUN uv venv --python 3.12 && uv sync --frozen || uv sync
+
+EXPOSE 18000
+CMD ["uv", "run", "uvicorn", "lra_api.main:app", "--host", "0.0.0.0", "--port", "18000"]
