@@ -25,7 +25,7 @@ apps/web/test-results/
 !.env.example
 
 # Storage
-storage/
+/storage/
 artifacts/
 
 # IDE
